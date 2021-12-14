@@ -1,6 +1,7 @@
 package com.example.tippingpoint
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 // Container functions
 @Composable
@@ -87,11 +89,24 @@ fun TopHeader(totalPerPerson: Double = 0.0) {
 @Preview
 @Composable
 fun MainContent() {
+    BillForm() { billAmt ->
+        Log.d("AMT", "MainContent: $billAmt")
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+// This will host the states
+fun BillForm(
+    modifier: Modifier = Modifier,
+    onValChanged: (String) -> Unit = {}
+) {
+
     val totalBillState = remember {
         mutableStateOf("")
     }
 
-    val validState = remember(totalBillState) {
+    val validState = remember(totalBillState.value) {
         // Look inside the text field
         // check if it's valid
         totalBillState.value.trim().isNotEmpty()
@@ -118,11 +133,14 @@ fun MainContent() {
                     }
                     // We need a way to dismiss the keyboard
                     // The value is valid here
+                    onValChanged(totalBillState.value.trim())
                     keyboardController?.hide()
                 })
         }
     }
+
 }
+
 
 //@Preview(showBackground = true)
 @Composable
